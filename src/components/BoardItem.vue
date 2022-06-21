@@ -52,24 +52,20 @@ export default {
 
         priceText() {
             const priceTypes = {
+                simple: (value) => value + ' ₽',
                 weight: (value) => value + ' ₽/кг',
                 monthly: (value) => value + ' ₽/мес'
             };
 
             const ranges = {
                 from: (value) => 'от ' + value,
-                to: (value) => 'до ' + value
+                to: (value) => 'до ' + value,
+                exact: (value) => value
             };
 
             let formatted = this.format(this.price.value);
-
-            if (Object.prototype.hasOwnProperty.call(this.price, 'range'))
-                formatted = ranges[this.price.range](formatted);
-
-            if (Object.prototype.hasOwnProperty.call(this.price, 'type'))
-                return priceTypes[this.price.type](formatted);
-
-            return formatted + ' ₽';
+            formatted = ranges[this.price.range](formatted);
+            return priceTypes[this.price.type](formatted);
         },
 
         publishedAtFormatted() {
