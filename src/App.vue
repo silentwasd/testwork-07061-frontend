@@ -2,18 +2,24 @@
   <div class="container px-4 px-lg-5 py-5">
       <div class="row">
           <div class="col d-flex flex-column gap-3">
+              <PaginationBar :data="pagination" @nextPage="nextPage" @previousPage="previousPage"></PaginationBar>
+
               <div class="row" v-for="(item, index) in sortedItems" :key="index">
-                  <BoardItem :title="item.title"
-                             :content="item.content"
-                             :price="item.price"
-                             :type="item.item_type"
-                             :published-at="item.published_at"></BoardItem>
+                  <div class="col">
+                      <BoardItem :title="item.title"
+                                 :content="item.content"
+                                 :price="item.price"
+                                 :type="item.item_type"
+                                 :published-at="item.published_at"></BoardItem>
+                  </div>
               </div>
+
+              <PaginationBar :data="pagination" @nextPage="nextPage" @previousPage="previousPage"></PaginationBar>
           </div>
 
           <div class="col-4 ps-5">
               <div class="p-4 shadow rounded sticky-top bg-white" style="top: 2em;">
-                  <h3>Всего {{ sortedItems.length }} объявлений</h3>
+                  <h3>Всего {{ pagination.total }} объявлений</h3>
 
                   <div class="mb-3">
                       <label for="type" class="form-label">Хочу:</label>
@@ -37,22 +43,61 @@
 import BoardItem from "@/components/BoardItem";
 import _ from "lodash";
 import axios from "axios";
+import PaginationBar from "@/components/PaginationBar";
 
 export default {
     name: 'App',
     components: {
+        PaginationBar,
         BoardItem
     },
     data() {
         return {
-            items: [],
+            pagination: {},
             type: ''
         };
     },
     computed: {
+        items() {
+            return this.pagination.data;
+        },
+
         sortedItems() {
             const items = this.type ? this.items.filter(x => x.item_type === this.type) : this.items;
             return _.sortBy(items, x => x.publishedAt);
+        }
+    },
+    watch: {
+        type() {
+            this.pagination.current_page = 1;
+            this.requestPage();
+        }
+    },
+    methods: {
+        previousPage() {
+            this.pagination.current_page--;
+            this.requestPage();
+        },
+
+        nextPage() {
+            this.pagination.current_page++;
+            this.requestPage();
+        },
+
+        async requestPage() {
+            try {
+                const query = new URLSearchParams({
+                    page: this.pagination.current_page,
+                    type: this.type
+                });
+
+                const response = await axios.get(`http://localhost:8000/api/board/items?${query}`);
+                if (!response.data.success)
+                    console.error(response.data);
+                this.pagination = response.data.data;
+            } catch (e) {
+                console.error(e);
+            }
         }
     },
     async mounted() {
@@ -60,7 +105,7 @@ export default {
             const response = await axios.get("http://localhost:8000/api/board/items");
             if (!response.data.success)
                 console.error(response.data);
-            this.items = response.data.data;
+            this.pagination = response.data.data;
         } catch (e) {
             console.error(e);
         }
