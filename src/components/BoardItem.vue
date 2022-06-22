@@ -83,7 +83,10 @@ export default {
             if (i.length('days') < 30)
                 return Math.round(i.length('days')) + ' дн назад';
 
-            return Math.round(i.length('months')) + ' мес назад';
+            if (i.length('months') < 12)
+                return Math.round(i.length('months')) + ' мес назад';
+
+            return Math.round(i.length('years')) + ' лет назад';
         }
     },
     methods: {
