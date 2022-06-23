@@ -13,7 +13,9 @@
                                    :content="item.content"
                                    :price="item.price"
                                    :type="item.item_type"
-                                   :published-at="item.published_at"></BoardItem>
+                                   :published-at="item.published_at"
+                                   style="cursor: pointer;"
+                                   @click="toBoardItemPage(item)"></BoardItem>
                     </div>
                 </div>
 
@@ -144,6 +146,13 @@ export default {
                     page: this.pagination.current_page
                 }
             });
+        },
+
+        toBoardItemPage(item) {
+            this.$router.push({
+                name: 'board.item',
+                params: { item: item.id }
+            })
         }
     },
     mounted() {

@@ -18,9 +18,38 @@
                 </div>
 
                 <div class="col-12 order-0 order-lg-1 col-lg-4 ps-lg-3 ps-xl-5 mb-4 mb-lg-0">
-                    <div class="p-4 shadow rounded sticky-top bg-white text-center" style="top: 3em;">
-                        <h3>{{ priceText }}</h3>
-                        <button v-if="!data.own" class="btn btn-primary w-100">Откликнуться</button>
+                    <div class="p-4 shadow rounded sticky-top bg-white" style="top: 3em;">
+                        <h3 class="text-center">{{ priceText }}</h3>
+
+                        <template v-if="userData.shown">
+                            <hr>
+
+                            <p>Пожалуйста, заполните данные ниже, чтобы владелец объявления мог с Вами связаться.</p>
+
+                            <div class="mb-3">
+                                <ValidationInput :errors="userData.errors" :validated="userData.validated"
+                                                 error-key="user_name"
+                                                 placeholder="Имя"
+                                                 v-model="userData.name"></ValidationInput>
+                            </div>
+
+                            <div class="mb-3">
+                                <ValidationInput :errors="userData.errors" :validated="userData.validated"
+                                                 error-key="user_email"
+                                                 placeholder="Электронная почта"
+                                                 type="email"
+                                                 v-model="userData.email"></ValidationInput>
+                            </div>
+                        </template>
+
+                        <template v-if="clickSent">
+                            <hr>
+
+                            <p class="m-0">Ваш отклик успешно отправлен!</p>
+                        </template>
+
+                        <button v-if="!data.own && !clickSent" class="btn btn-primary w-100"
+                                @click="doClick">Откликнуться</button>
                     </div>
                 </div>
             </div>
@@ -31,14 +60,24 @@
 <script>
 import axios from "axios";
 import {DateTime, Interval} from "luxon";
+import ValidationInput from "@/components/Form/ValidationInput";
 
 export default {
     name: "BoardItemPage",
+    components: {ValidationInput},
     props: ['item'],
     data() {
         return {
             errors: false,
-            data: {}
+            data: {},
+            userData: {
+                name: '',
+                email: '',
+                shown: false,
+                errors: {},
+                validated: false
+            },
+            clickSent: false
         };
     },
     computed: {
@@ -98,19 +137,64 @@ export default {
     methods: {
         format(val) {
             return parseInt(val).toLocaleString('en').replaceAll(',', ' ');
+        },
+
+        doClick() {
+            if (this.$root.auth.token || this.userData.shown)
+                this.sendClick();
+            else
+                this.userData.shown = true;
+        },
+
+        async sendClick() {
+            try {
+                const config = {
+                    headers: {}
+                };
+
+                if (this.$root.auth.token)
+                    config.headers['Authorization'] = 'Bearer ' + this.$root.auth.token;
+
+                const response = await axios.post(`http://localhost:8000/api/board/item/${this.item}/click`, {
+                    user_name: this.userData.name,
+                    user_email: this.userData.email
+                }, config);
+
+                if (!response.data.success)
+                    this.errors = true;
+                else {
+                    this.userData.shown = false;
+                    this.clickSent = true;
+                }
+            } catch (e) {
+                if (e.response.status === 422) {
+                    this.userData.errors = e.response.data.errors;
+                    this.userData.validated = true;
+                    return;
+                }
+
+                this.errors = true;
+                console.error(e);
+            }
         }
     },
     async mounted() {
         try {
-            const response = await axios.get(`http://localhost:8000/api/board/item/${this.item}`, {
-                headers: {
-                    Authorization: 'Bearer ' + this.$root.auth.token
-                }
-            });
+            const config = {
+                headers: {}
+            };
+
+            if (this.$root.auth.token)
+                config.headers['Authorization'] = 'Bearer ' + this.$root.auth.token;
+
+            const response = await axios.get(`http://localhost:8000/api/board/item/${this.item}`, config);
+
             if (!response.data.success)
                 this.errors = true;
-            else
+            else {
                 this.data = response.data.data;
+                this.clickSent = response.data.data.hasClick;
+            }
         } catch (e) {
             this.errors = true;
             console.error(e);
