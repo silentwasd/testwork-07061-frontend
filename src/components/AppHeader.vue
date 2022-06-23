@@ -13,8 +13,13 @@
                         <li class="nav-item">
                             <router-link to="/" class="nav-link">Доска</router-link>
                         </li>
-                        <li class="nav-item">
-                            <router-link to="/hello-world" class="nav-link">Hello, world!</router-link>
+
+                        <li v-if="!$root.auth.token" class="nav-item">
+                            <router-link to="/login" class="nav-link">Войти</router-link>
+                        </li>
+
+                        <li v-if="$root.auth.token" class="nav-item">
+                            <a href="#" class="nav-link" @click.prevent="$root.logout">Выйти</a>
                         </li>
                     </ul>
                 </div>
@@ -30,7 +35,7 @@ export default {
         return {
             collapsed: true
         };
-    }
+    },
 }
 </script>
 

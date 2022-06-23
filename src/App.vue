@@ -7,10 +7,51 @@
 </template>
 
 <script>
+import Cookie from "js-cookie";
 import AppHeader from "@/components/AppHeader";
+import axios from "axios";
 export default {
     name: 'App',
-    components: {AppHeader}
+    components: {AppHeader},
+    data() {
+        return {
+            auth: {
+                token: ''
+            }
+        };
+    },
+    methods: {
+        async logout() {
+            try {
+                const response = await axios.post('http://localhost:8000/api/logout', {}, {
+                    headers: {
+                        Authorization: 'Bearer ' + this.auth.token
+                    }
+                });
+
+                if (response.data.success) {
+                    this.auth.token = '';
+                    Cookie.remove('auth_token');
+                    await this.$router.push({ path: '/' });
+                } else {
+                    console.error("Server responded with false success field (logout).")
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    mounted() {
+        const token = Cookie.get('auth_token');
+        if (token)
+            this.auth.token = token;
+    },
+    created() {
+        this.$watch(
+            () => this.auth.token,
+            (val) => Cookie.set('auth_token', val)
+        )
+    }
 }
 </script>
 
