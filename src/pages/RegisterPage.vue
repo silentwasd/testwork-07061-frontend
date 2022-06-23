@@ -14,6 +14,7 @@
                                          error-key="name"
                                          :errors="errors"
                                          :validated="validated"
+                                         custom-class="fs-5"
                                          v-model="name"></ValidationInput>
 
                         <ValidationInput placeholder="Электронная почта"
@@ -21,6 +22,7 @@
                                          error-key="email"
                                          :errors="errors"
                                          :validated="validated"
+                                         custom-class="fs-5"
                                          v-model="email"></ValidationInput>
 
                         <ValidationInput placeholder="Пароль"
@@ -28,6 +30,7 @@
                                          error-key="password"
                                          :errors="errors"
                                          :validated="validated"
+                                         custom-class="fs-5"
                                          v-model="password"></ValidationInput>
 
                         <input type="password" class="form-control fs-5"

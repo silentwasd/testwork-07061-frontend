@@ -1,7 +1,7 @@
 <template>
     <label v-if="label" :for="id" class="form-label">{{ label }}</label>
     <div class="input-group has-validation">
-        <input class="form-control"
+        <textarea class="form-control"
                :id="id"
                :class="[
                     validated && !Object.prototype.hasOwnProperty.call(errors, errorKey) ? 'is-valid' : '',
@@ -10,8 +10,8 @@
                ]"
                :placeholder="placeholder"
                :value="modelValue"
-               :type="type"
-               @input="$emit('update:modelValue', $event.target.value)">
+               :rows="rows"
+               @input="$emit('update:modelValue', $event.target.value)"></textarea>
 
         <div v-if="validated && !Object.prototype.hasOwnProperty.call(errors, errorKey)" class="valid-feedback">
             Все отлично!
@@ -25,18 +25,15 @@
 
 <script>
 export default {
-    name: "ValidationInput",
+    name: "ValidationArea",
     props: {
         errors: Object,
         validated: Boolean,
         errorKey: String,
         placeholder: String,
-        type: {
-            type: String,
-            default: 'text'
-        },
         modelValue: String,
         label: String,
+        rows: String,
         customClass: String
     },
     data() {

@@ -14,6 +14,7 @@
                                          error-key="email"
                                          :errors="errors"
                                          :validated="validated"
+                                         custom-class="fs-5"
                                          v-model="email"></ValidationInput>
 
                         <ValidationInput placeholder="Пароль"
@@ -21,6 +22,7 @@
                                          type="password"
                                          :errors="errors"
                                          :validated="validated"
+                                         custom-class="fs-5"
                                          v-model="password"></ValidationInput>
                     </div>
 

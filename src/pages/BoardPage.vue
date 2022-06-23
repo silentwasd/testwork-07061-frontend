@@ -53,7 +53,7 @@
                     <div class="border-top pt-3">
                         <h5 class="mb-3">Хотите оставить свое объявление?</h5>
 
-                        <button class="btn btn-primary w-100">Добавить объявление</button>
+                        <router-link to="/board/create" class="btn btn-primary w-100">Добавить объявление</router-link>
                     </div>
                 </div>
             </div>
