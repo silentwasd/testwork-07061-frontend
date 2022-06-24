@@ -56,6 +56,11 @@
 
                         <button v-if="!data.own && !clickSent" class="btn btn-primary w-100 mt-3"
                                 @click="doClick">Откликнуться</button>
+
+                        <template v-if="data.own">
+                            <button class="btn btn-secondary w-100 mt-2" @click="edit">Изменить</button>
+                            <button class="btn btn-danger w-100 mt-2" @click="remove">Удалить</button>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -180,6 +185,29 @@ export default {
                     return;
                 }
 
+                this.errors = true;
+                console.error(e);
+            }
+        },
+
+        edit() {
+            this.$router.push({ name: 'board.item.edit', params: { item: this.item } });
+        },
+
+        async remove() {
+            try {
+                const response = await axios.post(`http://localhost:8000/api/board/item/${this.item}/remove`, {}, {
+                    headers: {
+                        Authorization: 'Bearer ' + this.$root.auth.token
+                    }
+                });
+
+                if (!response.data.success)
+                    this.errors = true;
+                else {
+                    await this.$router.push({ path: '/' });
+                }
+            } catch (e) {
                 this.errors = true;
                 console.error(e);
             }

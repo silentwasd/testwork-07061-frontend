@@ -8,6 +8,7 @@ import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import BoardCreatePage from "@/pages/BoardCreatePage";
 import BoardItemPage from "@/pages/BoardItemPage";
+import BoardEditPage from "@/pages/BoardEditPage";
 
 const routes = [
     {
@@ -18,7 +19,8 @@ const routes = [
     { path: '/login', component: LoginPage },
     { path: '/register', component: RegisterPage },
     { path: '/board/create', component: BoardCreatePage, meta: { auth: true } },
-    { path: '/board/item/:item', name: 'board.item', component: BoardItemPage, props: true }
+    { path: '/board/item/:item', name: 'board.item', component: BoardItemPage, props: true },
+    { path: '/board/item/:item/edit', name: 'board.item.edit', component: BoardEditPage, meta: { auth: true }, props: true }
 ];
 
 const router = createRouter({
