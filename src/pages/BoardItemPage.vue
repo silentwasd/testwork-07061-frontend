@@ -8,13 +8,15 @@
 
         <template v-if="!errors && Object.keys(data).length > 0">
             <div class="row">
-                <div class="col order-1 order-lg-0 d-flex flex-column gap-3">
-                    <p class="text-uppercase m-0 fs-5">{{ leadText }}</p>
-                    <h1 class="display-5 fw-bold m-0 lh-1">{{ data.title }}</h1>
-                    <hr>
-                    <p class="m-0 fs-5">{{ data.content }}</p>
-                    <p v-if="publishedAtFormatted" class="m-0">Опубликовано: {{ publishedAtFormatted }}</p>
-                    <p v-else class="m-0">Еще не опубликовано</p>
+                <div class="col order-1 order-lg-0">
+                    <div class="d-flex flex-column gap-3 bg-white shadow rounded p-4">
+                        <p class="text-uppercase m-0 fs-5">{{ leadText }}</p>
+                        <h1 class="display-5 fw-bold m-0 lh-1">{{ data.title }}</h1>
+                        <hr class="m-0">
+                        <p class="m-0 fs-5">{{ data.content }}</p>
+                        <p v-if="publishedAtFormatted" class="m-0">Опубликовано: {{ publishedAtFormatted }}</p>
+                        <p v-else class="m-0">Еще не опубликовано</p>
+                    </div>
                 </div>
 
                 <div class="col-12 order-0 order-lg-1 col-lg-4 ps-lg-3 ps-xl-5 mb-4 mb-lg-0">
@@ -64,6 +66,22 @@
                     </div>
                 </div>
             </div>
+
+            <tempalte v-if="data.clicks.length > 0">
+                <div class="row mt-4 mt-lg-5">
+                    <div class="col">
+                        <h1>Отклики</h1>
+                        <div class="row row-cols-1 row-cols-lg-3">
+                            <div class="col" v-for="click in data.clicks" :key="click.id">
+                                <div class="bg-white shadow-sm rounded p-3">
+                                    <h5 class="m-0">{{ click.user.name }}</h5>
+                                    <a :href="'mailto:' + click.user.email"><h3 class="m-0">{{ click.user.email }}</h3></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </tempalte>
         </template>
     </div>
 </template>
