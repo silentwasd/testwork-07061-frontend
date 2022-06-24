@@ -21,6 +21,8 @@
                     <div class="p-4 shadow rounded sticky-top bg-white" style="top: 3em;">
                         <h3 class="text-center">{{ priceText }}</h3>
 
+                        <p class="m-0">Владелец: <strong>{{ data.owner.name }}</strong></p>
+
                         <template v-if="userData.shown">
                             <hr>
 
@@ -33,7 +35,7 @@
                                                  v-model="userData.name"></ValidationInput>
                             </div>
 
-                            <div class="mb-3">
+                            <div>
                                 <ValidationInput :errors="userData.errors" :validated="userData.validated"
                                                  error-key="user_email"
                                                  placeholder="Электронная почта"
@@ -45,10 +47,14 @@
                         <template v-if="clickSent">
                             <hr>
 
-                            <p class="m-0">Ваш отклик успешно отправлен!</p>
+                            <p class="mb-1">Ваш отклик успешно отправлен!</p>
+                            <p class="mb-0">
+                                Ожидайте ответа от
+                                <strong>{{ data.owner.email }}</strong>
+                            </p>
                         </template>
 
-                        <button v-if="!data.own && !clickSent" class="btn btn-primary w-100"
+                        <button v-if="!data.own && !clickSent" class="btn btn-primary w-100 mt-3"
                                 @click="doClick">Откликнуться</button>
                     </div>
                 </div>
@@ -164,6 +170,7 @@ export default {
                     this.errors = true;
                 else {
                     this.userData.shown = false;
+                    this.data.owner.email = response.data.data.owner_email;
                     this.clickSent = true;
                 }
             } catch (e) {
